@@ -46,3 +46,5 @@ bin/phenix.refine.mb \
 ```
 
 Use `--mb-help` to see the wrapper-specific options.
+
+This project was built with the help of CODEX and the code was checked using Claude 4.6. 
