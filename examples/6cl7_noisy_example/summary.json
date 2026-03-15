@@ -1,0 +1,37 @@
+{
+  "example_name": "6cl7_noisy_neutral_2A_100nm",
+  "description": "Neutral 6cl7 refined against a simulated 2.0 A ED dataset with approximately 20% Rmerge proxy and 100 nm empirical thickness effects.",
+  "input_dataset": {
+    "model_path_in_workspace": "/path/to/reference_model.pdb",
+    "data_path_in_workspace": "/path/to/simulated_obs.mtz",
+    "notes": [
+      "Dataset was generated earlier in the Charges workspace stress test. To be made public later.",
+      "Use your own model and MTZ when moving this standalone hack into a separate repository."
+    ]
+  },
+  "commands": {
+    "standard_phenix_reference": "phenix.refine reference_model.pdb simulated_obs.mtz data_manager.model.type=electron data_manager.miller_array.labels.name=FSIM,SIGFSIM data_manager.miller_array.labels.name=FREE refinement.main.scattering_table=electron refinement.main.number_of_macro_cycles=3 refinement.output.write_maps=False refinement.output.write_map_coefficients=True overwrite=true output.prefix=phenix_run",
+    "mb_wrapper": "bin/phenix.refine.mb --mb-xray-table wk1995 --mb-electron-voltage-kv 200 reference_model.pdb simulated_obs.mtz data_manager.model.type=electron data_manager.miller_array.labels.name=FSIM,SIGFSIM data_manager.miller_array.labels.name=FREE refinement.main.scattering_table=electron refinement.main.number_of_macro_cycles=3 refinement.output.write_maps=False refinement.output.write_map_coefficients=True overwrite=true output.prefix=phenix_mb_run"
+  },
+  "results": {
+    "standard_phenix": {
+      "start_r_work": 0.2853,
+      "start_r_free": 0.2830,
+      "final_r_work": 0.2748,
+      "final_r_free": 0.3154,
+      "wall_clock": "2 minutes 9.97 seconds (129.97 seconds total)"
+    },
+    "mb_wrapper": {
+      "start_r_work": 0.2924,
+      "start_r_free": 0.2890,
+      "final_r_work": 0.2748,
+      "final_r_free": 0.3127,
+      "wall_clock": "2 minutes 40.88 seconds (160.88 seconds total)"
+    }
+  },
+  "interpretation": [
+    "The neutral-atom Mott-Bethe wrapper completed a full 6cl7 refinement on this noisy example dataset.",
+    "In this specific example the final R_work matched the ordinary Phenix run to four decimal places, while R_free was slightly lower for the wrapper.",
+    "This is one example, not a benchmark across many datasets.The MB wrapper is slightly slower."
+  ]
+}
