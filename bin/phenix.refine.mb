@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# ---------------------------------------------------------------------------
+# phenix.refine.mb — Shell launcher for the Mott-Bethe neutral-atom wrapper
+#
+# This script locates the Phenix Python interpreter, sets up the
+# environment, and invokes the patch script that replaces
+# Phenix's electron scattering factors with Mott-Bethe-derived ones.
+#
+# Override the Phenix Python path by setting:
+#   export PHENIX_PYTHON=/path/to/phenix/python
+# ---------------------------------------------------------------------------
+set -euo pipefail
+
+# Resolve the absolute path to the package root (one level up from bin/).
+PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+# Use the user-supplied Phenix Python, or fall back to a known default.
+PHENIX_PYTHON="${PHENIX_PYTHON:-Path/To/phenix-1.21.1-5286/python.app/Contents/MacOS/python}"
+if [[ ! -x "$PHENIX_PYTHON" ]]; then
+  echo "Phenix Python was not found at $PHENIX_PYTHON" >&2
+  echo "Set PHENIX_PYTHON to the python executable inside your Phenix installation." >&2
+  exit 1
+fi
+
+# Add the package directory to PYTHONPATH so the monkeypatch script can be
+# imported by Phenix's internal Python.
+export PYTHONPATH="$PACKAGE_DIR${PYTHONPATH:+:$PYTHONPATH}"
+
+# Set safe defaults for OpenMP threading to avoid shared-memory conflicts
+# that can occur with CCTBX's internal parallelism.
+export OMP_NUM_THREADS="${OMP_NUM_THREADS:-1}"       # single-threaded OpenMP
+export KMP_AFFINITY="${KMP_AFFINITY:-disabled}"       # no Intel thread pinning
+export TMPDIR="${TMPDIR:-/tmp}"                        # scratch directory
+
+# Hand off to the patch script with all user arguments.
+exec "$PHENIX_PYTHON" "$PACKAGE_DIR/scripts/phenix_refine_mb_neutral.py" "$@"
